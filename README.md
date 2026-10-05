@@ -1,11 +1,31 @@
-# plimsoll Trigger.dev starter
+# Run code from a Trigger.dev agent with Plimsoll
 
-A deployable Trigger.dev chat agent with a plimsoll `executeCode` tool, plus a
-deterministic deployed task that tests the connection without making an AI call.
-The tool returns cell persistence flags, the isolation tier, and the SHA-256 of
-the run record checked by the client. The digest is a consistency check, not a
-signature or proof that guest code computed honestly. See the
-[plimsoll feature guide](https://github.com/plimsollmark/plimsoll/blob/main/docs/trigger-dev.md).
+Give your agent a Python or JavaScript workspace on infrastructure you control.
+Trigger.dev manages the conversation; Plimsoll executes the code in a separate sandbox
+and checks the returned execution record in its client.
+
+**Two runnable examples show why this is useful:**
+
+- **Analyse a spreadsheet, then ask a follow-up.** Find which products account for an
+  increase in returns, then compare return rates using the same Python workspace.
+  Watch that workspace close when the conversation suspends.
+- **Check an execution ledger.** Verify two recorded calculations, change an output,
+  delete a calculation, and try substituting an older valid ledger. See what checksums,
+  signatures, and the caller's expected request list each detect.
+
+[Run or view the examples →](docs/demo/README.md) ·
+[Self-hosted Trigger.dev setup →](self-hosted/README.md) ·
+[Provider switching and its limits →](docs/providers.md)
+
+The walkthrough uses synthetic spreadsheet data, scripted model responses, and real
+local sandbox execution. It makes no AI calls. The signed-ledger example uses the
+separate Plimsoll signing harness; the chat tool checks records but does not sign them.
+
+**Keep the same code tool when changing execution providers.** Configure another
+Plimsoll backend without replacing your Trigger.dev tool integration. Match the new
+backend's languages, isolation and state support: Plimsoll sessions currently work on
+Docker and OpenShell; its E2B and Docker Cloud adapters currently use fresh runs.
+State-dependent code needs adaptation when moving to a fresh-run backend.
 
 ## What runs
 

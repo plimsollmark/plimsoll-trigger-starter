@@ -9,7 +9,13 @@
     "erasableSyntaxOnly": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
-  "include": ["src", "trigger.config.ts"]
+  "include": [
+    "src",
+    "trigger.config.ts",
+    "scripts/*.ts"
+  ]
 }

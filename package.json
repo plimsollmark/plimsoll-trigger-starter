@@ -7,7 +7,9 @@
     "deploy": "trigger deploy",
     "typecheck": "tsc --noEmit",
     "test": "node --test src/**/*.test.ts",
-    "trial": "node scripts/run-trial.mjs"
+    "trial": "node scripts/run-trial.mjs",
+    "demo": "node scripts/replay-demo.ts",
+    "demo:ledger": "node scripts/ledger-demo.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.0",

@@ -1,0 +1,49 @@
+{
+  "recordedAt": "2026-10-05T23:35:06.578Z",
+  "provider": "docker",
+  "floor": "kernel",
+  "runs": [
+    {
+      "name": "Count returned products",
+      "requestSha256": "c91f9391818ec4007fea962ee03c71586d0a2fcdb860448b770e430eaae5ca87",
+      "detail": "ran on docker (kernel): exit 0\nrecord a6b34ca2b1fe793406b6e263430d9343ada5a8f570e6f68410e26184604c0490 signed into <example-directory>/bundle.jsonl; request c91f9391818ec4007fea962ee03c71586d0a2fcdb860448b770e430eaae5ca87 (the line for verify -expect)"
+    },
+    {
+      "name": "Compare return rates",
+      "requestSha256": "41f7d85f80f2c37e725766743ea5dedec953cfc9db2ced145c54dbcb3f978de9",
+      "detail": "ran on docker (kernel): exit 0\nrecord 56b5021532d04106e271dc6e9057090364bc9951252e1cb80cae6434d16a5790 signed into <example-directory>/bundle.jsonl; request 41f7d85f80f2c37e725766743ea5dedec953cfc9db2ced145c54dbcb3f978de9 (the line for verify -expect)"
+    }
+  ],
+  "checks": [
+    {
+      "name": "Original ledger: both expected calculations",
+      "accepted": true,
+      "detail": "verified 4 entries signed by key aad458f4bfda13be2a43dcc05d7f2fbe7e3fc6816aa37481b52ae85a5c480c54, whole to its last checkpoint: 2 single runs"
+    },
+    {
+      "name": "Client checksum check: changed response rejected before delivery",
+      "accepted": false,
+      "detail": "plimsoll: result digest b29eee8587127b653a8c49326d8ef5daa2df98f26a0902de1cfc888348e0a3ea, the result received digests to eb10d2d86940889e71c66485384274e5e0ef190948ccc342d99fbc74c8ddf1c4"
+    },
+    {
+      "name": "Changed output: 24 returns changed to 20",
+      "accepted": false,
+      "detail": "plimsoll-attest: entry 1: attest: broken bundle chain: the line's link signs other content"
+    },
+    {
+      "name": "First calculation removed",
+      "accepted": false,
+      "detail": "plimsoll-attest: entry 1: attest: broken bundle chain: the line says it is line 2"
+    },
+    {
+      "name": "Earlier valid ledger, signatures only: accepted",
+      "accepted": true,
+      "detail": "verified 2 entries signed by key aad458f4bfda13be2a43dcc05d7f2fbe7e3fc6816aa37481b52ae85a5c480c54, whole to its last checkpoint: 1 single runs"
+    },
+    {
+      "name": "Earlier ledger against both expected requests: rejected",
+      "accepted": false,
+      "detail": "plimsoll-attest: attest: the bundle's calls are not the caller's: requests missing [41f7d85f80f2c37e], not expected []"
+    }
+  ]
+}
