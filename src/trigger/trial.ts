@@ -1,6 +1,8 @@
 import { randomUUID } from "node:crypto";
 import { task } from "@trigger.dev/sdk";
-import { CodeSandboxes, PlimsollClient } from "@plimsollmark/client";
+import { CodeSandboxes, PlimsollClient, meets } from "@plimsollmark/client";
+
+import { plimsollFloor } from "./floor.ts";
 
 // This task makes no AI call. It proves the deployed worker can reach a real
 // plimsolld, keep one Python interpreter for two cells, enforce the floor, and
@@ -13,11 +15,14 @@ export const deployedCellTrial = task({
     const url = process.env.PLIMSOLL_URL;
     const token = process.env.PLIMSOLL_TOKEN;
     if (!url || !token) throw new Error("PLIMSOLL_URL and PLIMSOLL_TOKEN are required");
+    const floor = plimsollFloor();
+    const client = new PlimsollClient({ baseUrl: url, token });
+    const daemon = await client.describe();
     const sandboxes = new CodeSandboxes({
-      client: new PlimsollClient({ baseUrl: url, token }),
+      client,
       sessions: "always",
       languages: ["python"],
-      minimumIsolation: "kernel",
+      minimumIsolation: floor,
       timeoutMs: 30_000,
     });
     const key = randomUUID();
@@ -30,12 +35,14 @@ export const deployedCellTrial = task({
       if (second.exitCode !== 0 || second.stdout.trim() !== "10" || !second.stateKept || second.freshInterpreter || second.freshSandbox) {
         throw new Error(`second cell did not reuse the interpreter: ${JSON.stringify(second)}`);
       }
-      if (first.isolation !== "kernel" || second.isolation !== "kernel") throw new Error("the kernel isolation floor was not met");
+      if (!meets(first.isolation, floor) || !meets(second.isolation, floor)) throw new Error(`the ${floor} isolation floor was not met`);
       if (!/^[0-9a-f]{64}$/.test(first.recordSha256) || !/^[0-9a-f]{64}$/.test(second.recordSha256)) {
         throw new Error("a checked run-record digest is missing");
       }
       if (first.recordSha256 === second.recordSha256) throw new Error("the two cells returned the same record digest");
       return {
+        daemon: { sandbox: daemon.sandbox, isolation: daemon.isolation },
+        floor,
         first: { stdout: first.stdout, isolation: first.isolation, recordSha256: first.recordSha256 },
         second: { stdout: second.stdout, isolation: second.isolation, recordSha256: second.recordSha256 },
         interpreterReused: true,

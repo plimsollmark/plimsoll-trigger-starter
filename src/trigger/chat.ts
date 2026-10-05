@@ -20,12 +20,14 @@ import { stepCountIs } from "ai";
 import { PlimsollClient } from "@plimsollmark/client";
 import { plimsollCodeSandbox } from "@plimsollmark/client/trigger";
 
+import { plimsollFloor } from "./floor.ts";
 import { models } from "./models.ts";
 
 // codeChatAgent builds the agent. idleTimeoutInSeconds is how long a run waits for the
 // next message before it suspends, which is when onChatSuspend closes the sandbox;
 // unset, it is Trigger.dev's default of 30. The test builds one with a few seconds and
-// with the floor of the daemon it runs against; the deployed agent below keeps kernel.
+// with the floor of the daemon it runs against; the deployed agent below takes
+// PLIMSOLL_FLOOR, kernel unless that names another tier.
 export function codeChatAgent(
   options: { id?: string; idleTimeoutInSeconds?: number; minimumIsolation?: "process" | "container" | "kernel" | "vm" } = {},
 ) {
@@ -37,7 +39,7 @@ export function codeChatAgent(
         token: process.env.PLIMSOLL_TOKEN,
       }),
     // Refused before dispatch on a daemon whose provider reports less.
-    minimumIsolation: options.minimumIsolation ?? "kernel",
+    minimumIsolation: options.minimumIsolation ?? plimsollFloor(),
     timeoutMs: 30_000,
   });
 

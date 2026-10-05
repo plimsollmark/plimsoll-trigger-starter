@@ -1,0 +1,79 @@
+# plimsolld beside a self-hosted Trigger.dev worker. setup.sh writes the .env this
+# reads (pinned image digests, the runtime, the state directory); README.md in this
+# directory is the walkthrough.
+#
+# Task runs reach the daemon at https://plimsolld:8746 over the plimsoll-sandbox
+# network, which trigger-worker.override.yaml adds to every run container. No port
+# is published on the host, and the network is internal, so it has no route out.
+
+services:
+  plimsolld:
+    image: ${PLIMSOLLD_IMAGE:?run ./setup.sh first}
+    restart: unless-stopped
+    # The invoking user's uid plus the docker socket's group: no root inside the
+    # container. The socket itself is root-equivalent on this host (see README).
+    user: "${PLIMSOLL_UID:?}:${PLIMSOLL_GID:?}"
+    group_add:
+      - "${DOCKER_GID:?}"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - plimsoll-sandbox
+    volumes:
+      # plimsolld starts every sandbox through the host's docker daemon.
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Per-run Unix sockets are made here and bind-mounted into sandboxes by the
+      # host's daemon, so the path must be the same inside and outside.
+      - type: bind
+        source: ${PLIMSOLL_RUN_DIR:?}
+        target: ${PLIMSOLL_RUN_DIR:?}
+        bind:
+          create_host_path: false
+      - ${PLIMSOLL_STATE_DIR:?}/clients.json:/etc/plimsoll/clients.json:ro
+      - ${PLIMSOLL_STATE_DIR:?}/tls:/etc/plimsoll/tls:ro
+      # The guest uid must belong to no account on this host; plimsoll checks the
+      # host's files, not the container's.
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/group:/etc/group:ro
+    environment:
+      TMPDIR: ${PLIMSOLL_RUN_DIR:?}
+      PLIMSOLL_ADDR: ":8746"
+      PLIMSOLL_CLIENTS_FILE: /etc/plimsoll/clients.json
+      PLIMSOLL_TLS_CERT: /etc/plimsoll/tls/cert.pem
+      PLIMSOLL_TLS_KEY: /etc/plimsoll/tls/key.pem
+      PLIMSOLL_HARDENED: ${PLIMSOLL_HARDENED:?}
+      SANDBOX_PROVIDER: docker
+      SANDBOX_MIN_ISOLATION: ${SANDBOX_MIN_ISOLATION:?}
+      SANDBOX_DOCKER_RUNTIME: ${SANDBOX_DOCKER_RUNTIME:-}
+      SANDBOX_DOCKER_IMAGE: ${SANDBOX_DOCKER_IMAGE:?}
+      SANDBOX_DOCKER_PROJECT_IMAGE: ${SANDBOX_DOCKER_PROJECT_IMAGE:?}
+      SANDBOX_DOCKER_SECCOMP: /etc/plimsoll/seccomp.json
+      SANDBOX_REQUIRE_PINNED_IMAGES: "1"
+      # Per run: 512 MiB, one CPU, 256 processes, 256 MiB of writable tmpfs.
+      SANDBOX_MEMORY_MB: ${SANDBOX_MEMORY_MB:-512}
+      SANDBOX_CPUS: ${SANDBOX_CPUS:-1}
+      SANDBOX_PIDS: ${SANDBOX_PIDS:-256}
+      SANDBOX_DISK_MB: ${SANDBOX_DISK_MB:-256}
+      # 2 GiB for all sandboxes at once, so at most four 512 MiB runs or sessions.
+      SANDBOX_TOTAL_MEMORY_MB: ${SANDBOX_TOTAL_MEMORY_MB:-2048}
+      SANDBOX_MAX_CONCURRENT: ${SANDBOX_MAX_CONCURRENT:-4}
+      SANDBOX_PER_KEY_CONCURRENT: ${SANDBOX_PER_KEY_CONCURRENT:-3}
+      SANDBOX_RATE_PER_MIN: ${SANDBOX_RATE_PER_MIN:-120}
+      SANDBOX_RATE_BURST: ${SANDBOX_RATE_BURST:-20}
+      SANDBOX_MAX_SESSIONS: ${SANDBOX_MAX_SESSIONS:-3}
+      SANDBOX_MAX_SESSIONS_PER_CALLER: ${SANDBOX_MAX_SESSIONS_PER_CALLER:-3}
+    healthcheck:
+      # /readyz re-runs the provider's preflight. busybox wget does not verify the
+      # certificate; this only asks the daemon on its own loopback whether it is ready.
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "--no-check-certificate", "https://127.0.0.1:8746/readyz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+networks:
+  plimsoll-sandbox:
+    name: plimsoll-sandbox
+    internal: true

@@ -1,0 +1,10 @@
+# Added by setup.sh (COMPOSE_FILE in .env) when docker has gVisor's runsc registered.
+#
+# Under runsc a sandbox's own cgroup files are gVisor's emulation, so plimsoll proves
+# the process limit at startup by reading the host cgroup of the sandbox process
+# docker reports. That needs the host's PID and cgroup namespaces. It adds no power
+# beyond the docker socket plimsolld already holds.
+services:
+  plimsolld:
+    pid: host
+    cgroup: host

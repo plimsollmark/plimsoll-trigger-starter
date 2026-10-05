@@ -1,0 +1,9 @@
+# Add to Trigger.dev's own worker compose (hosting/docker/worker/docker-compose.yml in
+# their repository) with an extra -f. It attaches every task run container to the
+# plimsoll-sandbox network as well as the two Trigger.dev's file already names, so a
+# task reaches plimsolld by name. Start plimsolld first: the network is created by
+# compose.yaml in this directory.
+services:
+  supervisor:
+    environment:
+      DOCKER_RUNNER_NETWORKS: webapp,supervisor,plimsoll-sandbox

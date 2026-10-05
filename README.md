@@ -19,6 +19,17 @@ spends Anthropic credits according to your account and model; the deployed
 trial task does not load or call it. Trigger.dev bills active task compute;
 check its [current pricing](https://trigger.dev/pricing) before use.
 
+## Self-hosted Trigger.dev
+
+Trigger.dev's self-hosted setup "is not designed to run untrusted code or untrusted
+payloads", by its own security page
+([EXTERNAL · Trigger.dev docs ↗](https://trigger.dev/docs/self-hosting/security)). [self-hosted/README.md](self-hosted/README.md) runs
+plimsolld beside a self-hosted v4 worker, on the worker's Docker host, so these tasks
+send generated code to it over a private Docker network instead of running it
+themselves. It was tested end to end with this repository's trial task, at the kernel
+tier under gVisor and the container tier under runc. The rest of this page covers a
+daemon you run elsewhere.
+
 ## Prepare plimsolld
 
 1. Build and configure a plimsoll daemon following its
@@ -37,11 +48,13 @@ check its [current pricing](https://trigger.dev/pricing) before use.
    is not your daemon's machine. Put TLS and bearer authentication in front of
    the daemon, restrict exposure where possible, and confirm a request from
    outside the daemon host reaches it. A temporary tunnel is suitable for a
-   controlled trial; operate a stable ingress for production.
+   controlled trial; operate a stable ingress for production. For a self-hosted
+   worker, run the daemon beside it instead ([self-hosted/README.md](self-hosted/README.md)).
 
-`minimumIsolation: "kernel"` is in both tasks. Hostile code from untrusted
-tenants must use a verified kernel or VM boundary. If your threat model calls
-for a VM, set `minimumIsolation: "vm"` and use a VM provider. Current VM
+Both tasks refuse a daemon below the kernel tier, unless the environment variable
+`PLIMSOLL_FLOOR` names `container` or `vm` (`src/trigger/floor.ts`). Hostile code
+from untrusted tenants must use a verified kernel or VM boundary. If your threat
+model calls for a VM, set `PLIMSOLL_FLOOR=vm` and use a VM provider. Current VM
 providers do not keep cells, so this starter's persistence-dependent trial
 will refuse; adapt the chat agent to fresh calls and heed `stateKept: false`.
 The in-tree plimsoll example's `container` floor is a local demonstration,
