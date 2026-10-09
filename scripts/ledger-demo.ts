@@ -45,7 +45,7 @@ try {
   let earlier = '';
   const runs = [];
   for (let i = 0; i < codes.length; i++) {
-    const request = { protocol: 2, minimumIsolation: floor, javascript: { code: codes[i] } };
+    const request = { protocol: 3, minimumIsolation: floor, javascript: { code: codes[i] } };
     const file = join(dir, `request-${i+1}.json`);
     await writeFile(file, JSON.stringify(request));
     const run = cli(['run', '-daemon', url, '-key', key + '.key', '-bundle', bundle, file]);
@@ -66,7 +66,11 @@ try {
     const body = await response.json() as any;
     assert.equal(Buffer.from(body.javascript.stdout, 'base64').toString(), '24 returns\n');
     body.javascript.stdout = Buffer.from('20 returns\n').toString('base64');
-    return new Response(JSON.stringify(body), { status: response.status, headers: { 'content-type': 'application/json' } });
+    // Keep the daemon's headers, its Plimsoll-Request-Id echo included, so the record check is what rejects the change.
+    const headers = new Headers(response.headers);
+    headers.delete('content-length');
+    headers.delete('content-encoding');
+    return new Response(JSON.stringify(body), { status: response.status, headers });
   }});
   await assert.rejects(() => alteredClient.runJavaScript('console.log("24 returns")', { minimumIsolation: floor as 'kernel' | 'container' }), (error: any) => {
     assert.equal(error.code, 'data_loss');

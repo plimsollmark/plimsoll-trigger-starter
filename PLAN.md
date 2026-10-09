@@ -28,8 +28,9 @@ The first dry run needed the existing project reference instead of the placehold
 The offline chat harness does not resume an exited run; the replay explicitly starts
 a new run after suspension and labels that scope on the page.
 
-Validation completed: npm ci; TypeScript checks including example scripts; Trigger.dev
+Validation completed (re-run 2026-10-09 on `@plimsollmark/client` 0.21.0 against plimsolld
+v0.21.0, evidence regenerated): npm ci; TypeScript checks including example scripts; Trigger.dev
 deploy dry run with the existing starter project; existing chat integration test against
-local Docker/gVisor; spreadsheet replay; signed-ledger replay with the published v0.19.0
+local Docker/gVisor; spreadsheet replay; signed-ledger replay with the published v0.21.0
 CLI; Chromium desktop and mobile interactions, no script errors or horizontal overflow.
 No live model or paid sandbox calls. No deployment or push. Preview is local only.

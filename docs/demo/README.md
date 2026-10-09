@@ -63,10 +63,10 @@ through an authenticated application tool. Do not trust a user-supplied conversa
 
 ## Reproduce the ledger
 
-Install the public command with Go 1.26.6 or newer:
+Install the public command with Go 1.26.9 or newer:
 
 ```sh
-go install github.com/plimsollmark/plimsoll/cmd/plimsoll-attest@v0.19.0
+go install github.com/plimsollmark/plimsoll/cmd/plimsoll-attest@v0.21.0
 ```
 
 Put Go's binary directory on your PATH, or set `PLIMSOLL_ATTEST_BIN` to that binary's

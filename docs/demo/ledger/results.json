@@ -1,24 +1,24 @@
 {
-  "recordedAt": "2026-10-05T23:35:06.578Z",
+  "recordedAt": "2026-10-09T22:09:06.635Z",
   "provider": "docker",
   "floor": "kernel",
   "runs": [
     {
       "name": "Count returned products",
-      "requestSha256": "c91f9391818ec4007fea962ee03c71586d0a2fcdb860448b770e430eaae5ca87",
-      "detail": "ran on docker (kernel): exit 0\nrecord a6b34ca2b1fe793406b6e263430d9343ada5a8f570e6f68410e26184604c0490 signed into <example-directory>/bundle.jsonl; request c91f9391818ec4007fea962ee03c71586d0a2fcdb860448b770e430eaae5ca87 (the line for verify -expect)"
+      "requestSha256": "dd9775e9264481a3604cc413422e92fd8b414d2f2a7bae0e848b010e4a06406a",
+      "detail": "ran on docker (kernel): exit 0\nrecord 2c752d1438ba8454f282f8309b2988ed4819d127cd6a5be7ae8473cc283387bd signed into <example-directory>/bundle.jsonl; request dd9775e9264481a3604cc413422e92fd8b414d2f2a7bae0e848b010e4a06406a (the line for verify -expect)"
     },
     {
       "name": "Compare return rates",
-      "requestSha256": "41f7d85f80f2c37e725766743ea5dedec953cfc9db2ced145c54dbcb3f978de9",
-      "detail": "ran on docker (kernel): exit 0\nrecord 56b5021532d04106e271dc6e9057090364bc9951252e1cb80cae6434d16a5790 signed into <example-directory>/bundle.jsonl; request 41f7d85f80f2c37e725766743ea5dedec953cfc9db2ced145c54dbcb3f978de9 (the line for verify -expect)"
+      "requestSha256": "429e3be2b2b0e27934800d4828430b450468f2101bc1600cb85e5be773f3a003",
+      "detail": "ran on docker (kernel): exit 0\nrecord 31ec4d93621a79e56faaf4a1c2615f70ed58c17f8191fd1444ed51b8ba2e4511 signed into <example-directory>/bundle.jsonl; request 429e3be2b2b0e27934800d4828430b450468f2101bc1600cb85e5be773f3a003 (the line for verify -expect)"
     }
   ],
   "checks": [
     {
       "name": "Original ledger: both expected calculations",
       "accepted": true,
-      "detail": "verified 4 entries signed by key aad458f4bfda13be2a43dcc05d7f2fbe7e3fc6816aa37481b52ae85a5c480c54, whole to its last checkpoint: 2 single runs"
+      "detail": "verified 4 entries signed by key d355883f91d87477997099185d1122f8f43ffb275e00450af6c43dd551c333b3, whole to its last checkpoint: 2 single runs"
     },
     {
       "name": "Client checksum check: changed response rejected before delivery",
@@ -38,12 +38,12 @@
     {
       "name": "Earlier valid ledger, signatures only: accepted",
       "accepted": true,
-      "detail": "verified 2 entries signed by key aad458f4bfda13be2a43dcc05d7f2fbe7e3fc6816aa37481b52ae85a5c480c54, whole to its last checkpoint: 1 single runs"
+      "detail": "verified 2 entries signed by key d355883f91d87477997099185d1122f8f43ffb275e00450af6c43dd551c333b3, whole to its last checkpoint: 1 single runs"
     },
     {
       "name": "Earlier ledger against both expected requests: rejected",
       "accepted": false,
-      "detail": "plimsoll-attest: attest: the bundle's calls are not the caller's: requests missing [41f7d85f80f2c37e], not expected []"
+      "detail": "plimsoll-attest: attest: the bundle's calls are not the caller's: requests missing [429e3be2b2b0e279], not expected []"
     }
   ]
 }

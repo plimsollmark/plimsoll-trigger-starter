@@ -10,7 +10,7 @@ The walkthrough displays recorded results from actual local execution, explicitl
 labelled as scripted. It is not a live model chat or upload frontend.
 
 The workspace example uses Trigger.dev's real offline chat harness and Plimsoll's
-published client. The ledger example separately invokes the published v0.19.0 signing
+published client. The ledger example separately invokes the published v0.21.0 signing
 CLI and verifies original, corrupted, missing and rolled-back evidence. Its public
 fixtures include no signing key. Checksums alone are not signatures; an older valid
 ledger requires the independently retained expected request list to detect missing work.
