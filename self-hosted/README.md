@@ -31,6 +31,14 @@ not. One part of Trigger.dev's stack did not run: its compose file names
 without the `electric` service (it backs the dashboard's live updates, which were not
 checked; the trial polls the API instead).
 
+On 2026-10-09, on the same machine under `runsc`, with plimsoll v0.21.0 (built with Go
+1.26.9) and `@plimsollmark/client` 0.21.0: `setup.sh`, `docker compose up -d` (hardened
+mode verified, `kernel` tier), `check.sh`, the starter's chat test run from a container
+on `plimsoll-sandbox` against `https://plimsolld:8746` (three Python cells in one session,
+all `kernel`; passed), and a wrong token refused with HTTP 401. The deployed
+`deployed-cell-trial` run on a self-hosted Trigger.dev instance was not repeated at
+v0.21.0; nothing on the Trigger.dev side of this recipe changed.
+
 ## Prerequisites
 
 - A Linux host running Trigger.dev's v4 worker from their Docker Compose setup
@@ -44,8 +52,8 @@ checked; the trial polls the API instead).
 - `openssl` and the `docker compose` plugin.
 - For the kernel tier, gVisor registered with Docker by plimsoll's installer, which also
   sets the `--host-uds=open` flag plimsoll needs
-  ([EXTERNAL · source repo ↗](https://github.com/plimsollmark/plimsoll/blob/v0.19.0/docker/install-gvisor.sh),
-  [EXTERNAL · plimsoll docs ↗](https://github.com/plimsollmark/plimsoll/blob/v0.19.0/docs/gvisor.md)).
+  ([EXTERNAL · source repo ↗](https://github.com/plimsollmark/plimsoll/blob/v0.21.0/docker/install-gvisor.sh),
+  [EXTERNAL · plimsoll docs ↗](https://github.com/plimsollmark/plimsoll/blob/v0.21.0/docs/gvisor.md)).
   Without it the recipe still works, at the container tier (see below).
 - This repository cloned on the worker host, and Node.js 22.18 or later where you deploy.
 
@@ -200,7 +208,7 @@ that runtime, that the root filesystem is read-only, that the only writable plac
 the promised size-limited mounts, that loopback is the only network interface, and that
 the process limit is in force. It is not attestation, which is cryptographic proof from
 hardware of what software is running
-([EXTERNAL · plimsoll docs ↗](https://github.com/plimsollmark/plimsoll/blob/v0.19.0/docs/isolation-tiers.md)).
+([EXTERNAL · plimsoll docs ↗](https://github.com/plimsollmark/plimsoll/blob/v0.21.0/docs/isolation-tiers.md)).
 
 ## What failure looks like
 
@@ -208,6 +216,7 @@ hardware of what software is running
 |---|---|
 | plimsolld keeps restarting; its log says `sandbox provider is not ready; refusing to serve` with a reason | A startup check failed. The reason names it, for example `bind: invalid argument` for a run directory path over 60 characters. |
 | `check.sh` prints `Describe answered HTTP 401` and `invalid or expired token` | The token is not the one in `clients.json`. |
+| The run fails with `does not carry this request's Plimsoll-Request-Id back`, or with `this daemon serves protocol 2 and the request states 3; nothing ran` | plimsolld is older than the deployed client. `@plimsollmark/client` 0.21.0 needs plimsolld v0.21.0 or later: pull this repository, re-run `setup.sh`, then `docker compose up -d`. |
 | The run fails with `fetch failed`, cause `ENOTFOUND` | The run container is not on `plimsoll-sandbox`: step 4's override is missing or the supervisor was not recreated. |
 | The run fails with `fetch failed`, cause `self-signed certificate` | The deployed image does not carry the certificate: deploy from a checkout that has `self-hosted/state/tls/cert.pem`. |
 | The run fails with `sandbox isolation requirement not met` | The daemon's tier is below the task's floor. Nothing ran. |
@@ -228,7 +237,7 @@ hardware of what software is running
   `plimsoll-sandbox`, because the supervisor's network setting is worker-wide, so any
   task on the worker can reach plimsolld; the token is what admits it. plimsoll sees one
   caller, `trigger-worker`. For a caller per project, add callers with `plimsoll-clients`
-  ([EXTERNAL · plimsoll docs ↗](https://github.com/plimsollmark/plimsoll/blob/v0.19.0/docs/callers.md))
+  ([EXTERNAL · plimsoll docs ↗](https://github.com/plimsollmark/plimsoll/blob/v0.21.0/docs/callers.md))
   and give each project its own token.
 - **The token is printed in each run's container log.** Trigger.dev v4.7.2's run
   controller logs the run's environment variables, `PLIMSOLL_TOKEN` included, in its
@@ -242,7 +251,7 @@ hardware of what software is running
   all runs, at most four at once, three sessions) are sized so a session never takes
   the last slot; set them for your host in `.env` with the variable names in
   `compose.yaml`. A session's files are bounded only after each call, not during it
-  ([EXTERNAL · plimsoll docs ↗](https://github.com/plimsollmark/plimsoll/blob/v0.19.0/docs/sessions.md)).
+  ([EXTERNAL · plimsoll docs ↗](https://github.com/plimsollmark/plimsoll/blob/v0.21.0/docs/sessions.md)).
 - **Builds are local.** The Python image's Alpine packages are constrained to a minor
   version, not pinned, so two builds on different days can differ; the image digest in
   `.env` names what you built, and plimsoll states that identity on every run.

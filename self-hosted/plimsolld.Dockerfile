@@ -14,13 +14,15 @@
 #   final            the two binaries, the docker CLI, and plimsoll's audited
 #                    seccomp profile (docker/seccomp.json in the module)
 
-ARG GO_IMAGE=golang:1.26.6-alpine@sha256:3889b425f035be855a72fb4755265311293b6d414521f0a519d819df32222d83
+# Go 1.26.9 or later: plimsoll builds with it, since 1.26.6 carries HTTP/2 server
+# advisories (published 2026-10-08) in code plimsolld runs.
+ARG GO_IMAGE=golang:1.26.9-alpine@sha256:cdfd4fe2da6b225d8b40c6b7a105736e548e83ff56d5d8f9394446eeb5eb84e0
 ARG DOCKER_CLI_IMAGE=docker:29.1.3-cli@sha256:4fa0ee1f3a7e4354c4ea34558b6d4ee32859baf4973d4c8ccc8e7fe3dd730c04
 ARG BASE_IMAGE=alpine:3.24@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
 
 FROM ${GO_IMAGE} AS source
-ARG PLIMSOLL_VERSION=v0.19.0
-ARG PLIMSOLL_MODULE_SUM=h1:EsrWBfNOstYBoeDJC+V9Iz/f4YGFuw4aC8hjgVE6tAc=
+ARG PLIMSOLL_VERSION=v0.21.0
+ARG PLIMSOLL_MODULE_SUM=h1:l6zRMu7iv6gyDvMFN/j/zNz5j0yyyDUX4OPu8or0HR4=
 ENV GOTOOLCHAIN=local
 RUN set -eu; \
     go mod download -json "github.com/plimsollmark/plimsoll@${PLIMSOLL_VERSION}" > /tmp/mod.json; \

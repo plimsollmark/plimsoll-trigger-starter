@@ -36,7 +36,9 @@ daemon you run elsewhere.
    [getting started](https://github.com/plimsollmark/plimsoll/blob/main/docs/getting-started.md),
    [caller](https://github.com/plimsollmark/plimsoll/blob/main/docs/callers.md), and
    [hardened mode](https://github.com/plimsollmark/plimsoll/blob/main/docs/hardened-mode.md)
-   guides. Its caller token needs `code:run`. Keep that token in a secret manager.
+   guides, at v0.21.0 or later: this starter's `@plimsollmark/client` 0.21.0 speaks
+   plimsoll's protocol 3, and an older daemon refuses its calls. Its caller token
+   needs `code:run`. Keep that token in a secret manager.
 2. Use a provider with sessions and verified `kernel` isolation. For Docker,
    configure the project image with Python, `SANDBOX_MAX_SESSIONS` greater
    than zero, and `SANDBOX_DOCKER_RUNTIME=runsc`. Verify `Describe` reports
@@ -47,7 +49,9 @@ daemon you run elsewhere.
 3. Give the Trigger.dev worker a reachable HTTPS URL. The worker's `localhost`
    is not your daemon's machine. Put TLS and bearer authentication in front of
    the daemon, restrict exposure where possible, and confirm a request from
-   outside the daemon host reaches it. A temporary tunnel is suitable for a
+   outside the daemon host reaches it. The ingress must pass the
+   `Plimsoll-Request-Id` header through in both directions: the client believes no
+   answer that does not carry its request's ID back. A temporary tunnel is suitable for a
    controlled trial; operate a stable ingress for production. For a self-hosted
    worker, run the daemon beside it instead ([self-hosted/README.md](self-hosted/README.md)).
 

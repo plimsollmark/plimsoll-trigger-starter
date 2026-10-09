@@ -13,7 +13,7 @@ state="$here/state"
 
 # The plimsoll release and the snippet image, both pinned. The module hash is the one
 # sum.golang.org records for this version; plimsolld.Dockerfile checks it too.
-version=v0.19.0
+version=v0.21.0
 node_image=node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402
 
 say() { printf '%s\n' "$*" >&2; }
