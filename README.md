@@ -1,5 +1,12 @@
 # Run code from a Trigger.dev agent with Plimsoll
 
+> **This repo is archived and no longer maintained (2026-11-25).** As far as I can tell nobody was using it, and
+> keeping it current every release was eating time I'd rather spend on the sandbox. It still works as written with
+> `@plimsollmark/client` 0.29.0 and plimsoll v0.29.0; plimsoll releases after v0.29.0 drop the Trigger.dev add-on, and
+> newer daemons refuse older clients. Fork it if you want to carry it on. If you need code execution in an AI SDK
+> agent, the Vercel AI SDK add-on in `@plimsollmark/client` does the same job. Think I'm wrong? Open an issue on
+> [plimsoll](https://github.com/plimsollmark/plimsoll/issues).
+
 Give your agent a Python or JavaScript workspace on infrastructure you control.
 Trigger.dev manages the conversation; Plimsoll executes the code in a separate sandbox
 and checks the returned execution record in its client.
