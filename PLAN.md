@@ -34,3 +34,9 @@ deploy dry run with the existing starter project; existing chat integration test
 local Docker/gVisor; spreadsheet replay; signed-ledger replay with the published v0.21.0
 CLI; Chromium desktop and mobile interactions, no script errors or horizontal overflow.
 No live model or paid sandbox calls. No deployment or push. Preview is local only.
+
+Re-run 2026-11-25 on `@plimsollmark/client` 0.29.0 against plimsolld v0.29.0 (Go 1.26.11),
+evidence regenerated: npm ci; typecheck; deploy dry run; chat integration test from the
+self-hosted task network under gVisor; spreadsheet replay; signed-ledger replay with the
+published v0.29.0 CLI (pass, reject, reject, pass, reject); headless Chromium over every
+tab, the verification cases, the corrected E2B row and mobile width, no script errors.

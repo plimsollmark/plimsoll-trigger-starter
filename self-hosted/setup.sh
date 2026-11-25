@@ -11,10 +11,10 @@ cd "$(dirname "$0")"
 here=$(pwd)
 state="$here/state"
 
-# The plimsoll release and the snippet image, both pinned. The module hash is the one
-# sum.golang.org records for this version; plimsolld.Dockerfile checks it too.
-version=v0.21.0
-node_image=node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402
+# The plimsoll release. The module hash is the one sum.golang.org records for this
+# version; plimsolld.Dockerfile pins and checks it. The snippet image is the
+# node:22-alpine digest the release's own docker/Dockerfile pins (read after step 1).
+version=v0.29.0
 
 say() { printf '%s\n' "$*" >&2; }
 die() { say "setup: $*"; exit 1; }
@@ -58,12 +58,19 @@ chmod 700 "$run_dir"
 
 say "1/5 building plimsolld $version from the Go module (checked against sum.golang.org and a pinned hash)"
 docker build -q -f plimsolld.Dockerfile -t "plimsoll-selfhost/plimsolld:$version" . >/dev/null
-rm -rf "$state/src/docker"
-docker build -q -f plimsolld.Dockerfile --target sandbox-context --output "type=local,dest=$state/src/docker" . >/dev/null
+rm -rf "$state/src/docker" "$state/src/nativehelper"
+docker build -q -f plimsolld.Dockerfile --target sandbox-context --output "type=local,dest=$state/src" . >/dev/null
+
+# The release's Dockerfile pins its node:22-alpine base by digest; the snippet image is
+# that same image, so snippets and projects run on one pinned base.
+node_image=$(sed -n 's/^ARG BASE_NODE=\(node:22-alpine@sha256:[0-9a-f]\{64\}\)$/\1/p' "$state/src/docker/Dockerfile")
+[ -n "$node_image" ] || die "the release's docker/Dockerfile no longer pins ARG BASE_NODE=node:22-alpine@sha256:..."
 
 say "2/5 building the sandbox images from the same module, on the pinned node:22-alpine"
 docker pull -q "$node_image" >/dev/null
-docker build -q --build-context "node:22-alpine=docker-image://$node_image" \
+# The project runner, plimsoll's native helper, comes from the named context
+# nativehelper: the module's committed build, which the Dockerfile checks against its pin.
+docker build -q --build-context "nativehelper=$state/src/nativehelper" \
   -t "plimsoll-selfhost/sandbox:$version" "$state/src/docker" >/dev/null
 # python.Dockerfile builds FROM plimsoll/sandbox:latest. Point that line at the base
 # just built instead of retagging it (a local plimsoll/sandbox:latest may be someone

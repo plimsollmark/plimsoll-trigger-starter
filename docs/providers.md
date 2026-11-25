@@ -13,7 +13,7 @@ input and output interface, but does not make backend capabilities identical.
 | Provider credentials and images | Configure these on the daemon. Do not add provider keys to the chat tool. |
 | Python and installed libraries | Ensure the target image/template supplies them. An unchanged tool cannot supply a missing dependency. |
 | Isolation requirement | The starter defaults to `kernel`. A lower tier is refused, not silently accepted. |
-| Workspace state | Docker and OpenShell support Plimsoll sessions. E2B and Docker Cloud currently use fresh executions through Plimsoll. |
+| Workspace state | Docker, OpenShell and E2B support Plimsoll sessions (an E2B suspend ends its interpreters, so the next call reports `freshInterpreter`). Docker Cloud currently uses fresh executions through Plimsoll. |
 | Run records | The client checks returned records. A signed bundle additionally needs the external signing harness. |
 | Operating cost | Local infrastructure and hosted provider charges differ. Changing providers is not a cost-neutral promise. |
 

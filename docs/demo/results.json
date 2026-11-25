@@ -1,5 +1,5 @@
 {
-  "recordedAt": "2026-10-09T22:09:04.416Z",
+  "recordedAt": "2026-11-25T12:10:39.259Z",
   "mode": "Scripted model, real local Docker sandbox, Trigger.dev offline chat harness",
   "provider": "docker",
   "floor": "kernel",
@@ -25,7 +25,7 @@
         "filesPersist": true,
         "freshSandbox": true,
         "isolation": "kernel",
-        "recordSha256": "f1ecdedff4016c00d847f7f4a80ef545243f601284960b84b645ea8eb9229133"
+        "recordSha256": "d573a85c50015c2d09f7ee003cc096d25b34eac5f95d8e69f121ee083f6ae722"
       }
     },
     {
@@ -41,7 +41,7 @@
         "stateKept": true,
         "filesPersist": true,
         "isolation": "kernel",
-        "recordSha256": "fc527cb4a2a6e8fccdb65182d41306cf57a267647d949a362813444c65da8acf"
+        "recordSha256": "3366e356187fc25dc7f75d98beed1d9e84705152f3dd1da91c3483cb7dbe9562"
       }
     },
     {
@@ -59,7 +59,7 @@
         "filesPersist": true,
         "freshSandbox": true,
         "isolation": "kernel",
-        "recordSha256": "0274a5b24a5665cfc1c27d03c0347eec8998500f5ec4c12069e7eb8665d140b0"
+        "recordSha256": "014e7fa54b754977ec879ab164bfe77fd767425cadea53f1829579d938e61f00"
       }
     }
   ],
@@ -73,6 +73,6 @@
     "stateKept": false,
     "filesPersist": false,
     "isolation": "kernel",
-    "recordSha256": "c421ee829745ef37a1422969fe963530ee77322998932d48d0e526524c08a267"
+    "recordSha256": "4496f3fcbf1128d973824c470f5518be9185a53b929fbbf557020902148fe891"
   }
 }

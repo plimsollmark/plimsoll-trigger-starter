@@ -24,8 +24,9 @@ separate Plimsoll signing harness; the chat tool checks records but does not sig
 **Keep the same code tool when changing execution providers.** Configure another
 Plimsoll backend without replacing your Trigger.dev tool integration. Match the new
 backend's languages, isolation and state support: Plimsoll sessions currently work on
-Docker and OpenShell; its E2B and Docker Cloud adapters currently use fresh runs.
-State-dependent code needs adaptation when moving to a fresh-run backend.
+Docker, OpenShell and E2B (an E2B suspend ends its interpreters); its Docker Cloud adapter
+currently uses fresh runs. State-dependent code needs adaptation when moving to a
+fresh-run backend.
 
 ## What runs
 
@@ -56,9 +57,9 @@ daemon you run elsewhere.
    [getting started](https://github.com/plimsollmark/plimsoll/blob/main/docs/getting-started.md),
    [caller](https://github.com/plimsollmark/plimsoll/blob/main/docs/callers.md), and
    [hardened mode](https://github.com/plimsollmark/plimsoll/blob/main/docs/hardened-mode.md)
-   guides, at v0.21.0 or later: this starter's `@plimsollmark/client` 0.21.0 speaks
-   plimsoll's protocol 3, and an older daemon refuses its calls. Its caller token
-   needs `code:run`. Keep that token in a secret manager.
+   guides, at v0.29.0: this starter's `@plimsollmark/client` 0.29.0 speaks
+   plimsoll's protocol 8, and a daemon of any other protocol refuses its calls before
+   anything runs. Its caller token needs `code:run`. Keep that token in a secret manager.
 2. Use a provider with sessions and verified `kernel` isolation. For Docker,
    configure the project image with Python, `SANDBOX_MAX_SESSIONS` greater
    than zero, and `SANDBOX_DOCKER_RUNTIME=runsc`. Verify `Describe` reports
@@ -78,9 +79,11 @@ daemon you run elsewhere.
 Both tasks refuse a daemon below the kernel tier, unless the environment variable
 `PLIMSOLL_FLOOR` names `container` or `vm` (`src/trigger/floor.ts`). Hostile code
 from untrusted tenants must use a verified kernel or VM boundary. If your threat
-model calls for a VM, set `PLIMSOLL_FLOOR=vm` and use a VM provider. Current VM
-providers do not keep cells, so this starter's persistence-dependent trial
-will refuse; adapt the chat agent to fresh calls and heed `stateKept: false`.
+model calls for a VM, set `PLIMSOLL_FLOOR=vm` and use a VM provider. Of plimsoll's VM
+providers, E2B keeps sessions (billed by the second; a suspend ends its interpreters, so
+the next call reports `freshInterpreter`) and Docker Cloud runs every call fresh, so on
+Docker Cloud this starter's persistence-dependent trial will refuse; adapt the chat
+agent to fresh calls and heed `stateKept: false`. Neither was tested with this starter.
 The in-tree plimsoll example's `container` floor is a local demonstration,
 not this production default.
 
@@ -117,7 +120,11 @@ against the lockfile. The `ws` override pins the
 [EXTERNAL · GitHub advisory's patched version ↗](https://github.com/advisories/GHSA-96hv-2xvq-fx4p)
 because Trigger.dev's CLI dependency still selects an older one. On 2026-10-04
 the production dependency audit found zero advisories; the full audit still
-reported advisories in development tools. The task trial tests execution
+reported advisories in development tools. On 2026-11-25, with `@plimsollmark/client`
+0.29.0 and `undici` and `systeminformation` moved to their patched releases in the
+lockfile, `npm audit --omit=dev` again found zero; the full audit reported 16, all in
+packages Trigger.dev's 4.7 CLI and build tools bring (the deploy toolchain, not the
+deployed tasks). The task trial tests execution
 behavior; it does not clear later dependency advisories.
 
 The chat agent needs `ANTHROPIC_API_KEY` in Trigger.dev's production environment

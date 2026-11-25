@@ -1,6 +1,6 @@
 // A real signed execution ledger. Uses the public Plimsoll CLI, never implements
 // a second verifier. Synthetic inputs only; temporary signing key is deleted.
-import { PlimsollClient } from '@plimsollmark/client';
+import { PlimsollClient, PROTOCOL } from '@plimsollmark/client';
 import { spawnSync } from 'node:child_process';
 import { mkdtemp, mkdir, readFile, writeFile, copyFile, rm } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
@@ -45,7 +45,7 @@ try {
   let earlier = '';
   const runs = [];
   for (let i = 0; i < codes.length; i++) {
-    const request = { protocol: 3, minimumIsolation: floor, javascript: { code: codes[i] } };
+    const request = { protocol: PROTOCOL, minimumIsolation: floor, javascript: { code: codes[i] } };
     const file = join(dir, `request-${i+1}.json`);
     await writeFile(file, JSON.stringify(request));
     const run = cli(['run', '-daemon', url, '-key', key + '.key', '-bundle', bundle, file]);
